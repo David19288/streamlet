@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/icon.png') }}" type="image/png">
+    <title>StreamLet | Sign Up</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #00aa95; /* Main color as background */
+            color: white; /* White text color */
+        }
+
+        header {
+            background-color: #007f77; /* Darker shade for header */
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between; /* Space between items in header */
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        nav {
+            display: flex; /* Flexbox for horizontal menu */
+            align-items: center; /* Center items vertically */
+        }
+
+        .logo img {
+            max-height: 50px; /* Adjust logo size */
+        }
+
+        ul {
+            display: flex; /* Flexbox for horizontal menu */
+            list-style: none; /* Remove default list styling */
+            padding: 0;
+            margin: 0;
+        }
+
+        ul li {
+            margin-left: 20px; /* Space between items in the menu */
+        }
+
+        ul li a {
+            color: white; /* White font for links */
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        ul li a:hover {
+            background-color: #005f5f; /* Darker shade on hover */
+            padding: 10px;
+            border-radius: 5px; /* Rounded corners */
+        }
+
+        main {
+            padding: 40px;
+            display: flex;
+            justify-content: center; /* Center the signup container */
+            align-items: center; /* Center align contents */
+            height: calc(100vh - 80px); /* Full height minus header */
+        }
+
+        .signup-container {
+            background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+            padding: 20px;
+            border-radius: 8px; /* Rounded corners for the signup container */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            text-align: center; /* Center align text inside */
+            max-width: 400px; /* Limit the width of the signup form */
+            width: 100%; /* Full width */
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px; /* Space below the heading */
+        }
+
+        form {
+            display: flex;
+            flex-direction: column; /* Vertical arrangement of inputs */
+            margin-bottom: 20px; /* Space below form */
+        }
+
+        input {
+            padding: 10px;
+            margin-bottom: 15px; /* Space between inputs */
+            border: none; /* Remove default border */
+            border-radius: 5px; /* Rounded corners */
+            font-size: 1em; /* Consistent font size */
+        }
+
+        button {
+            padding: 10px;
+            background-color: #007f77; /* Button color matches header */
+            color: white; /* White text */
+            border: none; /* Remove border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            font-size: 1.2em; /* Slightly larger font */
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #005f5f; /* Darker shade on hover */
+        }
+
+        p {
+            margin-top: 15px; /* Margin above paragraph */
+            color: white; /* Text color for links */
+        }
+
+        p a {
+            color: #00aa95; /* Link color */
+            text-decoration: underline; /* Underline links */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('login') }}">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="signup-container">
+            <h1>Create an Account</h1>
+            <form method="POST" action="{{ url_for('signup') }}">
+                <input type="text" name="username" placeholder="Username" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <input type="text" name="paypal_name" placeholder="PayPal Name" required>
+                <input type="email" name="paypal_email" placeholder="PayPal Email" required>
+                <button type="submit">Sign Up</button>
+            </form>
+            <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a>.</p>
+        </div>
+    </main>
+</body>
+</html>

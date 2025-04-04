@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/icon.png') }}" type="image/png">
+    <title>StreamLet | Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #00aa95; /* Main color as background */
+            color: white; /* White text color */
+        }
+
+        header {
+            background-color: #007f77; /* Darker shade for header */
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        nav {
+            display: flex; /* Flexbox for horizontal menu */
+        }
+
+        nav a {
+            color: white; /* White font for links */
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 10px 15px; /* Menu-like padding */
+            border-radius: 5px; /* Rounded corners */
+            transition: background-color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #005f5f; /* Darker shade on hover */
+        }
+
+        main {
+            padding: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column; /* Vertical arrangement of inputs */
+            max-width: 400px; /* Limits width of the form */
+            margin: 0 auto; /* Centers the form */
+        }
+
+        input {
+            padding: 10px;
+            margin-bottom: 20px; /* Space between inputs */
+            border: none; /* Remove default border */
+            border-radius: 5px; /* Rounded corners */
+            font-size: 1em; /* Consistent font size */
+        }
+
+        button {
+            padding: 10px;
+            background-color: #005f5f; /* Darker shade for button */
+            color: white; /* White text */
+            border: none; /* Remove border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            font-size: 1.2em; /* Slightly larger font */
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #004747; /* Darker shade on hover */
+        }
+
+        .signup-link {
+            margin-top: 20px; /* Space above the Sign Up link */
+            color: white; /* White color for the link */
+            text-decoration: none; /* Removes underline */
+        }
+
+        .signup-link:hover {
+            text-decoration: underline; /* Underline on hover for better UX */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('signup') }}">Sign Up</a>
+        </nav>
+    </header>
+    <main>
+        <form method="POST">
+            <h1>Login</h1> <!-- Title leaves space below it for the next form elements -->
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+            <a href="{{ url_for('signup') }}" class="signup-link">Don't have an account? Sign Up</a> <!-- Move Sign Up link inside form -->
+        </form>
+    </main>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ url_for('static', filename='images/icon.png') }}" type="image/png">
+    <title>StreamLet | Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #00aa95; /* Main color as background */
+            color: white; /* White text color */
+        }
+
+        header {
+            background-color: #007f77; /* Darker shade for header */
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        nav {
+            display: flex; /* Flexbox for horizontal menu */
+        }
+
+        nav a {
+            color: white; /* White font for links */
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 10px 15px; /* Menu-like padding */
+            border-radius: 5px; /* Rounded corners */
+            transition: background-color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #005f5f; /* Darker shade on hover */
+        }
+
+        .balance {
+            font-weight: bold;
+            font-size: 1.2em; /* Slightly larger font size */
+        }
+
+        main {
+            padding: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between; /* Space between buttons */
+            align-items: center; /* Center vertically */
+            margin-top: 20px; /* Space above the button area */
+        }
+
+        button {
+            background-color: #007f77; /* Set button color to #007f77 */
+            color: white; /* White text color for contrast */
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-radius: 5px; /* Rounded corners for button */
+            margin: 0 10px; /* Space between buttons */
+        }
+
+        button:hover {
+            background-color: #005f5f; /* Darker shade on hover */
+        }
+
+        .amount {
+            font-size: 1.5em; /* Slightly larger font size for amount */
+            margin: 0; /* Remove default margin */
+        }
+        
+        .left-column, .center-column {
+            flex: 1; /* Allows equal space sharing */
+            text-align: center; /* Center text inside both columns */
+        }
+
+        /* Additional styles for ads */
+        .ad-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+    </style>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7224699187685418"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('paypal') }}">PayPal Info</a>
+            <a href="{{ url_for('search') }}">Search User</a>
+            <a href="{{ url_for('pro') }}">Pro Features</a> <!-- New Pro Features Button -->
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+        <div class="balance">{{ balance }}€</div>
+    </header>
+    <main>
+        <h1>Your Dashboard</h1>
+        <div class="button-container">
+            <div class="left-column">
+                <button id="watchAdButton">Watch Ad</button>
+                <p class="amount">0.10 €</p>
+            </div>
+            <div class="center-column">
+                <button id="shareLinkButton">Share the link</button>
+                <p class="amount">0.5 €</p>
+            </div>
+        </div>
+
+        <!-- Google AdSense Ad Container -->
+        <div class="ad-container">
+            <ins class="adsbygoogle"
+                style="display:block"
+                data-ad-client="ca-pub-7224699187685418"
+                data-ad-slot="YOUR_AD_SLOT_ID" <!-- Change this to your Ad Slot ID -->
+                data-ad-format="auto"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    </main>
+    
+    <script>
+        // Warning for console access
+        (function() {
+            var devtools = { open: false };
+            var element = new Image();
+            Object.defineProperty(element, 'id', {
+                get: function() {
+                    devtools.open = true;
+                    alert("WARNING: If you paste any code or modify anything in the console, you won't be able to withdraw anymore!");
+                }
+            });
+
+            console.log('%c', element); // This will trigger the alert when the console is opened
+        })();
+
+        // Existing JavaScript for watching ads and sharing links
+        document.getElementById('watchAdButton').addEventListener('click', function() {
+            fetch('/watch_ad', {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(`New balance: ${data.new_balance} €`);
+                // Optionally, update the displayed balance on the dashboard
+                document.querySelector('.balance').textContent = `${data.new_balance} €`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to watch the ad. Please try again.');
+            });
+        });
+
+        document.getElementById('shareLinkButton').addEventListener('click', function() {
+            const urlToShare = 'http://127.0.0.1:5000/';
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(urlToShare).then(() => {
+                alert('Link copied to clipboard!');
+                // Increase balance after 7 seconds
+                setTimeout(() => {
+                    fetch('/add_bonus', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ amount: 0.50 })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(`New balance after sharing: ${data.new_balance} €`);
+                        // Update displayed balance
+                        document.querySelector('.balance').textContent = `${data.new_balance} €`;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Failed to add balance. Please try again.');
+                    });
+                }, 7000);  // 7 seconds delay
+            }).catch(err => {
+                console.error('Could not copy link: ', err);
+            });
+        });
+    </script>
+</body>
+</html>

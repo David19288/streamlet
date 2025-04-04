@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>StreamLet | PayPal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #00aa95; /* Main color as background */
+            color: white; /* White text color */
+        }
+
+        header {
+            background-color: #007f77; /* Darker shade for header */
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between; /* Space between items in header */
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        nav {
+            display: flex; /* Flexbox for horizontal menu */
+            align-items: center; /* Center items vertically */
+        }
+
+        nav a {
+            color: white; /* White font for links */
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 10px 15px; /* Menu-like padding */
+            border-radius: 5px; /* Rounded corners */
+            transition: background-color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #005f5f; /* Darker shade on hover */
+        }
+
+        .balance {
+            color: white; /* White color for balance */
+            font-size: 1.1em; /* Slightly larger font for balance */
+            margin-left: auto; /* Push balance to the right */
+        }
+
+        main {
+            padding: 40px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center align contents */
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 30px; /* Space below the heading */
+        }
+
+        form {
+            display: flex;
+            flex-direction: column; /* Vertical arrangement of inputs */
+            max-width: 400px; /* Limits width of the form */
+            width: 100%; /* Ensures form takes full width available */
+            margin-bottom: 20px; /* Space below form */
+        }
+
+        input {
+            padding: 10px;
+            margin-bottom: 20px; /* Space between inputs */
+            border: none; /* Remove default border */
+            border-radius: 5px; /* Rounded corners */
+            font-size: 1em; /* Consistent font size */
+        }
+
+        button {
+            padding: 10px;
+            background-color: #005f5f; /* Darker shade for button */
+            color: white; /* White text */
+            border: none; /* Remove border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            font-size: 1.2em; /* Slightly larger font */
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #004747; /* Darker shade on hover */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('paypal') }}">PayPal Info</a>
+            <a href="{{ url_for('search') }}">Search User</a>
+            <a href="{{ url_for('pro') }}">Pro Features</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+    </header>
+    <main>
+        <h1>Update PayPal Information</h1>
+        <form method="POST">
+            <input type="text" name="paypal_name" placeholder="PayPal Name" required>
+            <input type="email" name="paypal_email" placeholder="PayPal Email" required>
+            <button type="submit">Update</button>
+        </form>
+    </main>
+</body>
+</html>

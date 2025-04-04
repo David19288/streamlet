@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="{{ url_for('static', filename='images/icon.png') }}" type="image/png"> <!-- Favicon link -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamLet | User Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #00aa95; /* Background color */
+            color: white; /* Text color */
+            text-align: center; /* Center text */
+        }
+        header {
+            background-color: #007f77; /* Header color */
+            padding: 15px 20px; /* Padding for header */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Shadow for header */
+        }
+        h1 {
+            font-size: 2.5em; /* Heading size */
+            margin: 20px 0; /* Margin for heading */
+        }
+        .user-info {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px; /* Margin around user info */
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 600px; /* Max width for info row */
+            padding: 10px; /* Padding for info row */
+            background: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+            border-radius: 5px; /* Rounded corners */
+            margin: 5px 0; /* Space between info rows */
+        }
+        input[type="number"] {
+            padding: 10px; /* Padding for input */
+            margin: 10px 0; /* Margin for input */
+            border: none; /* No border for input */
+            border-radius: 5px; /* Rounded corners */
+            font-size: 1em; /* Font size for input */
+            width: 200px; /* Fixed width for input */
+            max-width: 90%; /* Responsive max width */
+        }
+        button {
+            background-color: #00aa95; /* Default button color */
+            color: white; /* Button text color */
+            border: none; /* No border for button */
+            padding: 10px 20px; /* Padding for button */
+            font-size: 1em; /* Font size for button */
+            cursor: pointer; /* Pointer cursor */
+            transition: background-color 0.3s ease; /* Transition for hover effect */
+            border-radius: 5px; /* Rounded corners for button */
+            width: 220px; /* Width for button */
+        }
+        button:hover {
+            background-color: #005f5f; /* Darker shade on hover */
+        }
+        .back-button {
+            background-color: #007f77; /* Different color for back button */
+        }
+        .back-button:hover {
+            background-color: rgb(35, 193, 185); /* Darker shade on hover for back button */
+        }
+        .message {
+            margin-top: 10px; /* Margin for message */
+            font-size: 1.2em; /* Font size for message */
+        }
+        #notification {
+            display: none; /* Hidden notification */
+            position: fixed; /* Position at bottom right */
+            bottom: 20px; /* Distance from bottom */
+            right: 20px; /* Distance from right */
+            background: green; /* Notification background color */
+            color: white; /* Notification text color */
+            padding: 10px; /* Padding for notification */
+            border-radius: 5px; /* Rounded corners for notification */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>User Details</h1>
+    </header>
+    <main>
+        <div class="user-info">
+            <div class="info-row">
+                <strong>Username:</strong> <span>{{ user_data[0] }}</span>
+            </div>
+            <div class="info-row">
+                <strong>Your freind balance:</strong> <span id="balance">{{ user_data[4] }}€</span>
+            </div>
+        </div>
+        
+        <input type="number" id="amount" placeholder="Amount to send" required>
+        <button id="sendButton">Send Money</button>
+        
+        <p id="message" class="message"></p>
+        
+        <!-- Button to go back to dashboard -->
+        <button class="back-button" onclick="location.href='{{ url_for('dashboard') }}'">Go to Dashboard</button>
+    </main>
+    
+    <div id="notification">Notification</div>
+
+    <script>
+        let moneySent = false;
+
+        document.getElementById('sendButton').addEventListener('click', function() {
+            if (moneySent) {
+                document.getElementById('message').innerText = 'You can only send money once. Please refresh the page to send again.';
+                return;
+            }
+
+            const amount = parseFloat(document.getElementById('amount').value);
+            const username = "{{ user_data[0] }}"; // Get the username from the context
+            const currentBalance = parseFloat(document.getElementById('balance').innerText.replace('€', ''));
+
+            if (isNaN(amount) || amount <= 0) {
+                document.getElementById('message').innerText = 'Please enter a valid amount.';
+                return;
+            }
+
+            if (amount > currentBalance) {
+                document.getElementById('message').innerText = 'Insufficient balance to send this amount.';
+                return;
+            }
+
+            // Send money request to server
+            fetch('/send_money', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ receiver_username: username, amount: amount }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('message').innerText = data.message; // Show the response message
+                if (data.success) {
+                    moneySent = true; // Mark the money as sent
+                    const balanceElement = document.getElementById('balance');
+
+                    // Update balances on the client-side
+                    balanceElement.innerText = (currentBalance - amount).toFixed(2) + '€';
+
+                    // Show notification for successful transaction
+                    const notification = document.getElementById('notification');
+                    notification.innerText = `Successfully sent €${amount} to ${username}.`;
+                    notification.style.display = 'block';
+                    
+                    // Hide the notification after 4 seconds
+                    setTimeout(() => {
+                        notification.style.display = 'none';
+                    }, 4000);
+
+                    // Auto-close the page after 5 seconds
+                    setTimeout(() => {
+                        window.close();
+                    }, 5000);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('message').innerText = 'An error occurred while attempting to send money. Please try again later.';
+            });
+        });
+    </script>
+</body>
+</html>

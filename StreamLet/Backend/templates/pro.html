@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ url_for('static', filename='images/icon.png') }}" type="image/png">
+    <title>StreamLet | Pro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #00aa95; /* Main color as background */
+            color: white;
+            text-align: center;
+        }
+        header {
+            background-color: #007f77; /* Darker shade for header */
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        nav {
+            margin: 20px 0; /* Space above the navigation */
+        }
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin: 20px 0;
+        }
+        main {
+            padding: 40px;
+        }
+        .feature-container {
+            margin: 20px auto;
+            width: 80%; /* Set a max width for better readability */
+            background: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        label {
+            font-size: 1.2em;
+        }
+        input[type="number"] {
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1em; /* Font size for the input field */
+        }
+        button {
+            background-color: #007f77; /* Button color */
+            color: white; /* Text color */
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.2em; /* Slightly larger text for the button */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-radius: 5px; /* Rounded corners */
+        }
+        button:hover {
+            background-color: #005f5f; /* Darker shade on hover */
+        }
+        #cost, #remainingTime, #totalTime {
+            font-size: 1.2em; /* Font size for cost and remaining time */
+            margin: 10px 0;
+            animation: fadeIn 1s; /* Animation for the time display */
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Pro Features</h1>
+        <nav>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('paypal') }}">PayPal Info</a>
+            <a href="{{ url_for('search') }}">Search User</a>
+            <a href="{{ url_for('pro') }}">Pro Features</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+    </header>
+    <main>
+        <div id="totalTime"></div> <!-- Display total time here -->
+        <div class="feature-container">
+            <h2>Bot for Ad Viewing</h2>
+            <p>Activate the bot to earn credits for every hour spent on this page.</p>
+            <label for="duration">Enter duration (hours): </label>
+            <input type="number" id="duration" min="1" max="24" required>
+            <button id="submitButton">Activate Bot</button>
+            <p id="cost">Cost: €<span id="costValue">0</span></p>
+            <p id="statusMessage"></p>
+        </div>
+        <div id="leftTime" style="display: none;" class="feature-container">
+            <h2>Time Remaining for Bot</h2>
+            <p id="remainingTime"></p>
+        </div>
+        <div style="display: none;">
+            <button id="watchAdButton">Watch Ad</button> <!-- Example button for ad watching -->
+        </div>
+    </main>
+
+    <script src="timer.js"></script> <!-- Include the timer script -->
+    <script>
+        let totalTime = 0; // Total time spent on the page in seconds
+        let timer; // Timer variable
+        let adClickTimer; // Timer for automatic ad clicks
+        const clickInterval = 33000; // 33 seconds in milliseconds
+        const costPerHour = 1; // Cost per hour
+
+        function updateCost() {
+            const hours = document.getElementById('duration').value;
+            const costValue = hours * costPerHour;
+            document.getElementById('costValue').innerText = costValue.toFixed(2);
+        }
+
+        document.getElementById('duration').addEventListener('input', updateCost);
+
+        document.getElementById('submitButton').addEventListener('click', function() {
+            const duration = parseInt(document.getElementById('duration').value);
+            const cost = duration * costPerHour;
+
+            if (isNaN(duration) || cost < 0) {
+                alert('Please enter a valid duration.');
+                return;
+            }
+
+            fetch('/check_balance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ duration: duration })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message); // Success message
+                    startTimer(duration); // Update timer with new duration
+                    startAdClicking(); // Start automatic ad clicking
+                } else {
+                    alert(data.message); // Failure message
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        function startTimer(duration) {
+            const extraTime = duration * 3600; // Convert hours to seconds
+            totalTime += extraTime; // Add new time to existing time
+            displayRemainingTime();
+
+            // Store remaining time in session storage
+            sessionStorage.setItem('remainingTime', totalTime);
+
+            if (!timer) { // Start timer only if not already running
+                timer = setInterval(updateTimer, 1000); // Update every second
+            }
+        }
+
+        function startAdClicking() {
+            adClickTimer = setInterval(() => {
+                document.getElementById('watchAdButton').click(); // Simulate click on watch ad button
+            }, clickInterval);
+        }
+
+        function updateTimer() {
+            if (totalTime > 0) {
+                totalTime--;
+                // Update stored remaining time
+                sessionStorage.setItem('remainingTime', totalTime);
+                displayRemainingTime();
+            } else {
+                clearInterval(timer);
+                clearInterval(adClickTimer); // Stop ad clicking timer
+                alert('Your time has expired.');
+                document.getElementById('leftTime').style.display = 'none';
+                timer = null; // Reset timer reference
+            }
+        }
+
+        function displayRemainingTime() {
+            const hours = Math.floor(totalTime / 3600);
+            const minutes = Math.floor((totalTime % 3600) / 60);
+            document.getElementById('remainingTime').innerText = 
+                `${hours} hour(s) and ${minutes} minute(s) remaining`;
+            document.getElementById('leftTime').style.display = 'block'; // Show the remaining time section
+        }
+
+        function loadRemainingTime() {
+            const storedTime = parseInt(sessionStorage.getItem('remainingTime'));
+
+            if (!isNaN(storedTime) && storedTime > 0) {
+                totalTime = storedTime;
+                displayRemainingTime();
+                timer = setInterval(updateTimer, 1000); // Update every second
+                startAdClicking(); // Resume ad clicking if time is still left
+            }
+        }
+
+        // Load remaining time on page load
+        window.onload = function() {
+            loadRemainingTime(); // Check for remaining time in session storage
+        };
+
+        // Handle page exit and storage
+        window.onbeforeunload = function() {
+            sessionStorage.setItem('remainingTime', totalTime);
+            clearInterval(adClickTimer); // Clear the ad clicking timer
+        };
+    </script>
+</body>
+</html>
