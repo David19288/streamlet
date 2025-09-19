@@ -4,7 +4,11 @@ import time
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Strong random secret key for session
-USER_DATA_FILE = 'users.txt'
+
+# Get the directory where this script is located
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Go up one level to reach the StreamLet directory, then to users.txt
+USER_DATA_FILE = os.path.join(BASE_DIR, '..', 'users.txt')
 TRANSACTION_TIMEOUT = 60  # seconds to wait between transactions
 user_last_transaction = {}
 
@@ -15,11 +19,16 @@ def save_user(username, password, paypal_name, paypal_email, initial_balance=0.0
 
 # Function to get user data by username
 def get_user_data(username):
-    with open(USER_DATA_FILE, 'r') as f:
-        for line in f:
-            user_data = line.strip().split(',')
-            if user_data[0] == username:
-                return user_data  # Return the entire user data
+    try:
+        with open(USER_DATA_FILE, 'r') as f:
+            for line in f:
+                user_data = line.strip().split(',')
+                if user_data[0] == username:
+                    return user_data  # Return the entire user data
+    except FileNotFoundError:
+        # Create the file if it doesn't exist
+        with open(USER_DATA_FILE, 'w') as f:
+            pass
     return None  # Return None if user is not found
 
 # Function to update user's PayPal info
