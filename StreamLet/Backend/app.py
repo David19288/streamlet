@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
 import os
 import time
 
@@ -258,6 +258,12 @@ def send_money():
     user_last_transaction[sender_username] = current_time
 
     return {'message': f'Successfully sent €{amount} to {receiver_username}'}
+
+# Serve ads.txt at the root for AdSense verification
+@app.route('/ads.txt')
+def ads_txt():
+    content = "google.com, pub-7224699187685418, DIRECT, f08c47fec0942fa0"
+    return Response(content, mimetype='text/plain')
 
 if __name__ == '__main__':
     app.run(debug=True)
