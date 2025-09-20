@@ -189,7 +189,13 @@
             fetch('/watch_ad', {
                 method: 'POST',
             })
-            .then(response => response.json())
+            .then(async (response) => {
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    throw data;
+                }
+                return data;
+            })
             .then(data => {
                 alert(`New balance: ${data.new_balance} €`);
                 // Optionally, update the displayed balance on the dashboard
@@ -197,7 +203,14 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Failed to watch the ad. Please try again.');
+                if (error && error.error === 'Not authenticated') {
+                    alert('Please log in to watch ads.');
+                    window.location.href = '/login';
+                } else if (error && error.error) {
+                    alert(`Failed to watch the ad: ${error.error}`);
+                } else {
+                    alert('Failed to watch the ad. Please try again.');
+                }
             });
         });
 

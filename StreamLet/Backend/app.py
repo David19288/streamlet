@@ -124,7 +124,7 @@ def paypal():
 @app.route('/watch_ad', methods=['POST'])
 def watch_ad():
     if 'username' not in session:
-        return redirect(url_for('login'))  # Redirect if not logged in
+        return {'error': 'Not authenticated'}, 401  # JSON error for fetch callers
 
     user_data = get_user_data(session['username'])
     if user_data is None:
