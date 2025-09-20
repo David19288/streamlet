@@ -1,2 +1,2 @@
 David,235689,ilin,ilin.davidka@gmail.com,25.200000000000003
-Alex,130412,alex,alex@gmail.com,81.29999999999987
+Alex,130412,alex,alex@gmail.com,81.39999999999986
